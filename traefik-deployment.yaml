@@ -1,0 +1,73 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.19.0 ()
+    traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+    traefik.http.routers.http-catchall.entrypoints: web
+    traefik.http.routers.http-catchall.middlewares: redirect-to-https
+    traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
+    traefik.http.routers.traefik.entrypoints: websecure
+    traefik.http.routers.traefik.middlewares: authtraefik
+    traefik.http.routers.traefik.rule: Host(`traefik.`)
+    traefik.http.routers.traefik.service: api@internal
+    traefik.http.routers.traefik.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: traefik
+  name: traefik
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml
+        kompose.version: 1.19.0 ()
+        traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+        traefik.http.routers.http-catchall.entrypoints: web
+        traefik.http.routers.http-catchall.middlewares: redirect-to-https
+        traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
+        traefik.http.routers.traefik.entrypoints: websecure
+        traefik.http.routers.traefik.middlewares: authtraefik
+        traefik.http.routers.traefik.rule: Host(`traefik.`)
+        traefik.http.routers.traefik.service: api@internal
+        traefik.http.routers.traefik.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.service: traefik
+    spec:
+      containers:
+      - args:
+        - --entrypoints.web.address=:80
+        - --entrypoints.websecure.address=:443
+        - --providers.docker
+        - --api
+        - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+        - --certificatesresolvers.leresolver.acme.email=me@masp.io
+        - --certificatesresolvers.leresolver.acme.storage=/acme.json
+        - --certificatesresolvers.leresolver.acme.tlschallenge=true
+        image: traefik:v2.0.0
+        name: traefik
+        ports:
+        - containerPort: 80
+        - containerPort: 443
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/run/docker.sock
+          name: traefik-claim0
+          readOnly: true
+        - mountPath: /acme.json
+          name: traefik-claim1
+      restartPolicy: Always
+      volumes:
+      - name: traefik-claim0
+        persistentVolumeClaim:
+          claimName: traefik-claim0
+          readOnly: true
+      - name: traefik-claim1
+        persistentVolumeClaim:
+          claimName: traefik-claim1
+status: {}

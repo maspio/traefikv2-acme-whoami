@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.19.0 ()
+    traefik.http.middlewares.redirect-to-https.redirectscheme.scheme: https
+    traefik.http.routers.http-catchall.entrypoints: web
+    traefik.http.routers.http-catchall.middlewares: redirect-to-https
+    traefik.http.routers.http-catchall.rule: hostregexp(`{host:.+}`)
+    traefik.http.routers.traefik.entrypoints: websecure
+    traefik.http.routers.traefik.middlewares: authtraefik
+    traefik.http.routers.traefik.rule: Host(`traefik.`)
+    traefik.http.routers.traefik.service: api@internal
+    traefik.http.routers.traefik.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: traefik
+  name: traefik
+spec:
+  ports:
+  - name: "80"
+    port: 80
+    targetPort: 80
+  - name: "443"
+    port: 443
+    targetPort: 443
+  selector:
+    io.kompose.service: traefik
+status:
+  loadBalancer: {}
