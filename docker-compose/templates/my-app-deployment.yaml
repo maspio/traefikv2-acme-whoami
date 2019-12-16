@@ -1,0 +1,38 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.19.0 ()
+    traefik.http.routers.my-app.entrypoints: websecure
+    traefik.http.routers.my-app.middlewares: auth
+    traefik.http.routers.my-app.rule: Host(``)
+    traefik.http.routers.my-app.tls: "true"
+    traefik.http.routers.my-app.tls.certresolver: leresolver
+  creationTimestamp: null
+  labels:
+    io.kompose.service: my-app
+  name: my-app
+spec:
+  replicas: 1
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.19.0 ()
+        traefik.http.routers.my-app.entrypoints: websecure
+        traefik.http.routers.my-app.middlewares: auth
+        traefik.http.routers.my-app.rule: Host(``)
+        traefik.http.routers.my-app.tls: "true"
+        traefik.http.routers.my-app.tls.certresolver: leresolver
+      creationTimestamp: null
+      labels:
+        io.kompose.service: my-app
+    spec:
+      containers:
+      - image: containous/whoami:v1.3.0
+        name: my-app
+        resources: {}
+      restartPolicy: Always
+status: {}

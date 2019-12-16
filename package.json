@@ -4,7 +4,9 @@
   "description": "[2019_09_10-101_docker/docker-compose-09.yml](https://github.com/containous/blog-posts/blob/master/2019_09_10-101_docker/docker-compose-09.yml)",
   "main": "index.js",
   "scripts": {
-    "kompose": "kompose convert -f docker-compose.yml"
+    "kompose": "kompose convert -f docker-compose.yml",
+    "kompose:helm": "kompose convert -c"
+    
   },
   "repository": {
     "type": "git",
